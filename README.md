@@ -72,7 +72,7 @@ Es necesario tener instalado **SWI-Prolog**. Puede descargarlo desde su [sitio w
 
     * **Guardar los cambios en un nuevo archivo:**
         ```prolog
-        ?- guardar_cambios('tp_final_actualizado.pl').
+        ?- guardar_cambios('Sistema-Analisis-Encuestas-Prolog-Actualizado.pl').
         ```
 
 ---
@@ -80,4 +80,4 @@ Es necesario tener instalado **SWI-Prolog**. Puede descargarlo desde su [sitio w
 * **Materia:** Conceptos y Paradigmas de Lenguajes de Programación
 * **Universidad:** Universidad Nacional de Lanús
 * **Año:** 2025
-* **Documentación:** Puede acceder haciendo [click aquí](https://drive.google.com/file/d/1e_3hYyhA-oEAEo4rMpDQkdIaM_bm7MlN/view?usp=sharing).
+* **Documentación:** Puede acceder haciendo [click aquí](https://drive.google.com/file/d/1GThJi8_Mu1qh34bsdYhqcMwGeGORVgQR/view).
