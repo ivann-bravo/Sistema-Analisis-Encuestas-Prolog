@@ -209,7 +209,7 @@ tasa_aceptacion(_, 0). % Esta regla solo se alcanzara si la de arriba falla (ej:
 producto_mas_aceptado(Nombre, Tasa) :-
     % 1. Creamos una lista de [Tasa, Nombre] para todos los productos.
     findall([T, N], (producto(ID, N, _, _), tasa_aceptacion(ID, T)), Lista),
-
+    
     % 2. Ordenamos la lista. sort/2 ordena de menor a mayor por el primer elemento (la Tasa).
     sort(Lista, Ordenada),
 
@@ -277,31 +277,53 @@ perfil_rechazo(ProductoID, EdadMin, EdadMax, Genero) :-
 
 % REGLA AUXILIAR: Cuenta las ocurrencias de un Elemento en una Lista.
 % contar_ocurrencias(Elemento, Lista, Conteo)
+% Caso Base: Si la lista esta vacia, el conteo siempre es 0.
 contar_ocurrencias(_, [], 0).
-contar_ocurrencias(X, [X|T], N) :-
-    contar_ocurrencias(X, T, N1),
-    N is N1 + 1.
-contar_ocurrencias(X, [Y|T], N) :-
-    X \= Y,
-    contar_ocurrencias(X, T, N).
+
+% Caso Recursivo 1: La cabeza de la lista es el Elemento que buscamos.
+contar_ocurrencias(Elemento, [Elemento|Cola], Conteo) :-
+    contar_ocurrencias(Elemento, Cola, ConteoPrevio), % Sigue contando en el resto de la lista (Cola).
+    Conteo is ConteoPrevio + 1. % Al resultado (ConteoPrevio), le sumo 1.
+
+% Caso Recursivo 2: La cabeza de la lista NO es el Elemento que buscamos.
+% En este caso, simplemente seguimos contando en el resto de la lista (Cola) sin incrementar el conteo.
+contar_ocurrencias(Elemento, [Cabeza|Cola], Conteo) :-
+    Elemento \= Cabeza,
+    contar_ocurrencias(Elemento, Cola, Conteo). % El conteo total es el mismo que el que se encuentre en el resto de la lista.
 
 % REGLA AUXILIAR: Elimina todas las ocurrencias de un Elemento de una Lista.
 % eliminar_todos(Elemento, ListaOriginal, ListaResultado)
+% Caso Base: Si la lista original esta vacia, el resultado tambien lo esta.
 eliminar_todos(_, [], []).
-eliminar_todos(X, [X|T], R) :-
-    eliminar_todos(X, T, R).
-eliminar_todos(X, [H|T], [H|R]) :-
-    X \= H,
-    eliminar_todos(X, T, R).
+
+% Caso Recursivo 1: La cabeza de la lista es el Elemento a eliminar.
+eliminar_todos(Elemento, [Elemento|Cola], ResultadoFinal) :-
+    eliminar_todos(Elemento, Cola, ResultadoFinal). % No incluimos la cabeza en el resultado.
+
+% Caso Recursivo 2: La cabeza de la lista NO es el Elemento a eliminar.
+eliminar_todos(Elemento, [Cabeza|Cola], [Cabeza|ResultadoDelResto]) :-
+    Elemento \= Cabeza,
+    eliminar_todos(Elemento, Cola, ResultadoDelResto). % Conservamos la cabeza.
 
 % REGLA AUXILIAR PRINCIPAL: Convierte una lista de elementos en una lista de frecuencias.
-% Ejemplo: [a, b, a] -> [[2, a], [1, b]]
+% Ejemplo: [a, b, a, c, b, a] -> [[3, a], [2, b], [1, c]]
 % contar_frecuencias(ListaOriginal, ListaDeFrecuencias)
+% Caso Base: Si la lista a procesar esta vacia, la lista de frecuencias tambien.
 contar_frecuencias([], []).
-contar_frecuencias([H|T], [[N, H]|FreqResto]) :-
-    contar_ocurrencias(H, [H|T], N),
-    eliminar_todos(H, T, RestoSinH),
-    contar_frecuencias(RestoSinH, FreqResto).
+
+% Caso Recursivo Principal:
+contar_frecuencias([Elemento|Cola], [[Conteo, Elemento]|FrecuenciasDelResto]) :-
+    % 1. Contamos cuantas veces aparece Elemento en la lista original.
+    % Esto nos da el conteo de ocurrencias de Elemento.
+    contar_ocurrencias(Elemento, [Elemento|Cola], Conteo),
+
+    % 2. Elimina todas las ocurrencias de Elemento de la lista original.
+    % Esto es necesario para que no contemos el mismo elemento varias veces.
+    eliminar_todos(Elemento, Cola, RestoLimpio),
+
+    % 3. Llama a la regla recursivamente para contar las frecuencias del resto de la lista.
+    % Esto nos da la lista de frecuencias del resto de los elementos.
+    contar_frecuencias(RestoLimpio, FrecuenciasDelResto).
 
 % --- REGLAS DE ANALISIS DE RAZONES ---
 
